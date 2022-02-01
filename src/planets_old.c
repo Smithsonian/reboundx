@@ -12,9 +12,6 @@
 #include "spk.h"
 #include "planets.h"
 
-#define FNAMESIZE 256
-#define DEFAULT_JPL_PLANET_EPHEM "linux_m13000p17000.441"
-
 int body[11] = {
         PLAN_SOL,                       // Sun (in barycentric)
         PLAN_MER,                       // Mercury center
@@ -90,22 +87,15 @@ void jpl_work(double *P, int ncm, int ncf, int niv, double t0, double t1, double
 struct _jpl_s * jpl_init(void)
 {
         struct _jpl_s *jpl;
-	struct stat sb;
-	char buf[FNAMESIZE];
-	ssize_t ret;
-	off_t off;
+        struct stat sb;
+        char buf[256];
+        ssize_t ret;
+        off_t off;
         int fd, p;
 
-        /** use or environment-specified file, 
-	 * or the default filename, in that order
-         */
-        if (getenv("JPL_PLANET_EPHEM")!=NULL)
-	    strncpy(buf, getenv("JPL_PLANET_EPHEM"), FNAMESIZE-1);
-        else
-	    strncpy(buf, DEFAULT_JPL_PLANET_EPHEM, FNAMESIZE-1);
-
-        //snprintf(buf, sizeof(buf), "linux_p1550p2650.440");
-        //snprintf(buf, sizeof(buf), "linux_m13000p17000.441");
+//      snprintf(buf, sizeof(buf), "/home/blah/wherever/linux_p1550p2650.430");
+        //snprintf(buf, sizeof(buf), "linux_p1550p2650.430");
+        snprintf(buf, sizeof(buf), "linux_p1550p2650.440");	
 
         if ((fd = open(buf, O_RDONLY)) < 0)
                 return NULL;
@@ -248,6 +238,7 @@ static void _ear(struct _jpl_s *jpl, double *z, double t, struct mpos_s *pos)
 
         vecpos_set(pos->w, emb.w);
         vecpos_off(pos->w, lun.w, -1.0 / (1.0 + jpl->cem));
+
 }
 
 /* This was not fully tested */
@@ -266,7 +257,7 @@ static void _lun(struct _jpl_s *jpl, double *z, double t, struct mpos_s *pos)
 
         vecpos_set(pos->w, emb.w);
         vecpos_off(pos->w, lun.w, jpl->cem / (1.0 + jpl->cem));
-
+	
 }
 
 
