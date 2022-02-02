@@ -26,7 +26,7 @@ class TimeState(Structure):
     ]
 
 """
-static int all_ephem(const int i, const double t, double* const GM,
+static void all_ephem(const int i, const double t, double* const GM,
 		      double* const x, double* const y, double* const z,
 		      double* const vx, double* const vy, double* const vz,
 		      double* const ax, double* const ay, double* const az
@@ -38,13 +38,13 @@ def all_ephem(i, t):
     ephemeris.
     
     *Returns*
-        (GM, (x, y, z, vx, vy, vz, ax, ay, az)) : tuple of floats
+        (x, y, z, vx, vy, vz, ax, ay, az) : tuple of floats
     
     """
     
     # Set up call to integration_function
     _all_ephem = rebx_lib.all_ephem
-    _all_ephem.restype = c_int
+    _all_ephem.restype = None
     _all_ephem.argtypes = (c_int, c_double, 
                                       POINTER(c_double),
                                       POINTER(c_double),
@@ -72,7 +72,7 @@ def all_ephem(i, t):
                               byref(vx), byref(vy), byref(vz),
                               byref(ax), byref(ay), byref(az))
 
-    return GM.value, np.array((x.value, y.value, z.value, vx.value, vy.value, vz.value, ax.value, ay.value, az.value))
+    return (GM.value, x.value, y.value, z.value, vx.value, vy.value, vz.value, ax.value, ay.value, az.value)
 
 
 
@@ -111,19 +111,18 @@ def integration_function(tstart, tend, tstep,
     if (tend-tstart)/tstep < 0.0:
         print('tstep is in the wrong direction')
         return None, None, None, None, -10
-
-    substeps = 10
+    
     while(return_value == 5 and iters<5):
 
         n_alloc = int(fac*n_alloc)
-        tsize = (n_alloc*substeps+1)    
-        ssize = (n_alloc*substeps+1)*6*(n_particles+n_var)
+        tsize = (n_alloc*8+1)    
+        ssize = (n_alloc*8+1)*6*(n_particles+n_var)
 
         outtime = np.zeros((tsize), dtype=np.double)
         outstate = np.zeros((ssize), dtype=np.double)
 
-        n_out = c_int()
-        
+        n_out = c_int()    
+
         return_value = _integration_function(tstart, tend, tstep,
                                              geocentric,
                                              epsilon,
@@ -137,18 +136,14 @@ def integration_function(tstart, tend, tstep,
                                              outtime.ctypes.data_as(POINTER(c_double)),
                                              outstate.ctypes.data_as(POINTER(c_double)))
 
-        #print('integration_function: ', iters)
-        #import sys
-        #sys.exit()
-
         if len(outtime)>1:
             fac = int(1.5*abs((tend-tstart)/(outtime[-1]-outtime[0])))
 
         iters += 1
 
     outstate = np.reshape(outstate, (-1, (n_particles+n_var), 6))
-    outstate = outstate[:substeps*n_out.value+1]
-    outtime = outtime[:substeps*n_out.value+1]
+    outstate = outstate[:8*n_out.value+1]
+    outtime = outtime[:8*n_out.value+1]
 
     states = outstate[:,0:n_particles,:]
     var_state = outstate[:,n_particles:,:]
@@ -202,7 +197,7 @@ def production_integration_function_wrapper(
     """
 
     n_particles = len(instate_arr)
-
+    
     # call the integrator
     # For non-gravs:
     # pass in an identifier for the model
