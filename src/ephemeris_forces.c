@@ -1683,7 +1683,9 @@ int integration_function(double tstart, double tend, double tstep,
 			 int n_alloc,			 
 			 int *n_out,
 			 double* outtime,
-			 double* outstate){			 
+			 double* outstate,
+			 double min_dt,
+			 double max_dt){			 
 
     struct reb_simulation* r = reb_create_simulation();
 
@@ -1704,7 +1706,11 @@ int integration_function(double tstart, double tend, double tstep,
     // be done so that other REBOUND integration routines could be explored.
 
     // Don't hard code this.
-    r->ri_ias15.min_dt = 1e-2;  // to avoid very small time steps
+    r->ri_ias15.min_dt = min_dt;  // to avoid very small time steps
+    r->ri_ias15.max_dt = max_dt;  // to avoid very large time steps
+
+    //r->ri_ias15.min_dt = 1e-2;  // to avoid very small time steps
+    //r->ri_ias15.max_dt = 32.0;  // to avoid very small time steps
     //r->ri_ias15.min_dt = 1e-4;  // to avoid very small time steps    
     r->ri_ias15.epsilon = epsilon; // to avoid convergence issue with geocentric orbits    
 
