@@ -83,7 +83,9 @@ def integration_function(tstart, tend, tstep,
                          n_var,
                          invar_part,                         
                          invar,
-                         epsilon = 1e-8):
+                         epsilon = 1e-8,
+                         min_dt = 0.01,
+                         max_dt = 32.):
 
     # Set up call to integration_function
     _integration_function = rebx_lib.integration_function
@@ -99,7 +101,9 @@ def integration_function(tstart, tend, tstep,
                                       c_int,
                                       POINTER(c_int),
                                       POINTER(c_double),
-                                      POINTER(c_double))
+                                      POINTER(c_double),
+                                      c_double,
+                                      c_double)
 
     _integration_function.restype = c_int
 
@@ -135,7 +139,9 @@ def integration_function(tstart, tend, tstep,
                                              n_alloc,
                                              byref(n_out),
                                              outtime.ctypes.data_as(POINTER(c_double)),
-                                             outstate.ctypes.data_as(POINTER(c_double)))
+                                             outstate.ctypes.data_as(POINTER(c_double)),
+                                             min_dt,
+                                             max_dt)
 
         #print('integration_function: ', iters)
         #import sys
@@ -166,9 +172,8 @@ def production_integration_function_wrapper(
         tstep=20,
         geocentric=0,
         epsilon=1e-8,
-        tstep_min = 0.02,
-        tstep_max = 32        
-):
+        tstep_min = 0.01,
+        tstep_max = 32):       
 
     """
     Standardized wrapper for calling integration_function
@@ -261,7 +266,9 @@ def production_integration_function_wrapper(
                                                                                 n_var,
                                                                                 invar_part,
                                                                                 invar,
-                                                                                epsilon = epsilon)
+                                                                                epsilon = epsilon,
+                                                                                min_dt = tstep_min,
+                                                                                max_dt = tstep_max)
 
         outtime, states, var_state, var_ng, return_value = integration_function(tstart,
                                                                                 tend,
@@ -272,7 +279,9 @@ def production_integration_function_wrapper(
                                                                                 n_var,
                                                                                 invar_part,
                                                                                 var_state[-1],
-                                                                                epsilon = epsilon)
+                                                                                epsilon = epsilon,
+                                                                                min_dt = tstep_min,
+                                                                                max_dt = tstep_max)
 
         return_value = (return_value,)         
          
@@ -295,7 +304,10 @@ def production_integration_function_wrapper(
                                                                                 n_var,
                                                                                 invar_part,
                                                                                 invar,
-                                                                                epsilon = epsilon)
+                                                                                epsilon = epsilon,
+                                                                                min_dt = tstep_min,
+                                                                                max_dt = tstep_max)
+        
 
         outtime, states, var_state, var_ng, return_value = integration_function(tend,
                                                                                 tstart,
@@ -306,7 +318,16 @@ def production_integration_function_wrapper(
                                                                                 n_var,
                                                                                 invar_part,
                                                                                 var_state[-1],
-                                                                                epsilon = epsilon)
+                                                                                epsilon = epsilon,
+                                                                                min_dt = tstep_min,
+                                                                                max_dt = tstep_max)
+
+
+        # Reverse the order of the integration
+
+        outtime = np.flip(outtime, axis=0)[0:-1]
+        states = np.flip(states, axis=0)[0:-1]
+        var_state = np.flip(var_state, axis=0)[0:-1]
 
         return_value = (return_value,)
         
@@ -329,7 +350,9 @@ def production_integration_function_wrapper(
                                                                                       n_var,
                                                                                       invar_part,
                                                                                       invar,
-                                                                                      epsilon = epsilon)
+                                                                                      epsilon = epsilon,
+                                                                                      min_dt = tstep_min,
+                                                                                      max_dt = tstep_max)
         
 
          outtime1, states1, var_state1, var_ng1, return_value1 = integration_function(epoch,
@@ -341,7 +364,10 @@ def production_integration_function_wrapper(
                                                                                       n_var,
                                                                                       invar_part,
                                                                                       invar,
-                                                                                      epsilon = epsilon)
+                                                                                      epsilon = epsilon,
+                                                                                      min_dt = tstep_min,
+                                                                                      max_dt = tstep_max)
+         
 
          # Reverse the order of the first integration
          # and concatenate the results of the second integration
