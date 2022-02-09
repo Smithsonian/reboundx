@@ -169,7 +169,7 @@ def production_integration_function_wrapper(
         epoch,
         instate_arr,
         non_grav_dict_list = None,
-        tstep=20,
+        tstep=32,
         geocentric=0,
         epsilon=1e-8,
         tstep_min = 0.01,
