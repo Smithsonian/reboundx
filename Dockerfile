@@ -22,7 +22,7 @@ RUN apt-get -y update && apt-get install -y \
 						bzip2		\
 						vim		  \
 						sudo    \
-            netcat  \
+            netcat-traditional  \
             postgresql-client \
             libpq-dev
 
