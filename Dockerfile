@@ -1,8 +1,5 @@
 # Pull official base image.
-FROM ubuntu:18.04
-
-# Set working directory.
-WORKDIR /usr/src/app
+FROM python:3.11
 
 # Set environment variables.
 # PYTHONDONTWRITEBYTECODE: Prevents Python from writing pyc files to disc (equivalent to python -B option).
@@ -20,9 +17,6 @@ RUN apt-get -y update && apt-get install -y \
             make 		\
             git     \
             git-lfs \
-            python3.8 	  \
-						python3-pip   \
-            python3.8-dev \
             perl-base		  \
 						wget 		\
 						bzip2		\
@@ -32,8 +26,6 @@ RUN apt-get -y update && apt-get install -y \
             postgresql-client \
             libpq-dev
 
-# Make sure pip is up to date.
-RUN python3.8 -m pip install --upgrade pip
 
 # --- REBOUND INSTALLS ----------
 WORKDIR /
