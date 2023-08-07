@@ -44,6 +44,6 @@ ENV REB_DIR=/rebound
 ENV LD_LIBRARY_PATH=/rebound/src
 
 WORKDIR /
-COPY . /
+COPY . .
 WORKDIR /reboundx/examples/ephem_forces/
 RUN make
