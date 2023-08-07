@@ -1,13 +1,49 @@
-FROM andrewosh/binder-base
+# Pull official base image.
+FROM ubuntu:18.04
 
-# for use with mybinder.org
+# Set working directory.
+WORKDIR /usr/src/app
 
-MAINTAINER Daniel Tamayo <tamayo.daniel@gmail.com>
+# Set environment variables.
+# PYTHONDONTWRITEBYTECODE: Prevents Python from writing pyc files to disc (equivalent to python -B option).
+ENV PYTHONDONTWRITEBYTECODE 1
+# For local development, use 0
+ENV USE_CHEBY_CHECKER 1
 
-USER root
-COPY . $HOME/
+# PYTHONUNBUFFERED: Prevents Python from buffering stdout and stderr (equivalent to python -u option).
+ENV PYTHONUNBUFFERED 1
 
-RUN pip install rebound
-RUN pip install -v -e .
-RUN $HOME/anaconda2/envs/python3/bin/pip install rebound
-RUN $HOME/anaconda2/envs/python3/bin/pip install -v -e .
+# install system dependencies
+RUN apt-get -y update && apt-get install -y \
+          	bash    \
+            gcc  		\
+            make 		\
+            git     \
+            git-lfs \
+            python3.8 	  \
+						python3-pip   \
+            python3.8-dev \
+            perl-base		  \
+						wget 		\
+						bzip2		\
+						vim		  \
+						sudo    \
+            netcat  \
+            postgresql-client \
+            libpq-dev
+
+# Make sure pip is up to date.
+RUN python3.8 -m pip install --upgrade pip
+
+# --- REBOUND INSTALLS ----------
+WORKDIR /
+RUN git clone https://github.com/Smithsonian/rebound.git
+WORKDIR /rebound
+RUN make
+ENV REB_DIR=/rebound
+ENV LD_LIBRARY_PATH=/rebound/src
+
+WORKDIR /
+COPY . /usr/src/app/
+WORKDIR /reboundx/examples/ephem_forces/
+RUN make
