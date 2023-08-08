@@ -12,7 +12,7 @@ regex
 pytest-skip-slow; python_version >= '3.7'
 dataclasses; python_version < '3.7'
 requests
-pandas >= "2.0.0"
+pandas>=2.0.0
 typing_extensions
 slack_sdk
 lxml
