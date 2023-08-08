@@ -26,5 +26,4 @@ unidecode
 pylatexenc
 matplotlib
 ipywidgets
-jsonschema>=3.2.0
-pyrsistent>=0.18.0
+jsonschema
