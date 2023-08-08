@@ -39,3 +39,8 @@ WORKDIR /
 COPY . /reboundx
 WORKDIR /reboundx/examples/ephem_forces/
 RUN make
+
+# Install python dependencies
+RUN pip install --upgrade pip
+COPY ./requirements.txt /base_rebound_image/requirements.txt
+RUN pip install -r /base_rebound_image/requirements.txt
