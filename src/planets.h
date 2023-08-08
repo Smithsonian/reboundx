@@ -22,8 +22,6 @@ enum {
         _NUM_TEST,
 };
 
-int body[11];
-
 // these are array indices for the internal interface
 enum {
         JPL_MER,                        // Mercury
