@@ -1,0 +1,30 @@
+astropy
+astropy_healpix
+astroquery
+jplephem
+novas # Not available on Windows: https://github.com/brandon-rhodes/python-novas/issues/15
+novas_de405
+numpy
+pytest
+scipy
+psycopg2-binary
+regex
+pytest-skip-slow; python_version >= '3.7'
+dataclasses; python_version < '3.7'
+requests
+pandas >= "2.0.0"
+typing_extensions
+slack_sdk
+lxml
+mysql-connector-python==8.0.29
+multiprocessing_logging
+python-dateutil
+colorcet
+bokeh==3.0.3; python_version >= '3.7'
+bokeh==2.3.3; python_version < '3.7'
+unidecode
+pylatexenc
+matplotlib
+ipywidgets
+jsonschema>=3.2.0
+pyrsistent>=0.18.0
